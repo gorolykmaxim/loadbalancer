@@ -19,27 +19,34 @@ class ConfigLoader(object):
         self.__api = AdvancedLoadbalancerAPI(self.__config.get_attribute('api_url'))
 
     async def main(self):
+        print("Loading config...")
         config = self.__load_config()
+        print("Loaded config successfully!")
         for group_name, group in config.items():
             try:
+                print("Adding node group '{}'...".format(group_name))
                 await self.__api.create_node_group(group_name)
             except APIError as e:
                 print(GROUP_CREATION_FAILURE.format(group=group_name, reason=e))
                 continue
             for node_name, node in group['nodes'].items():
                 try:
+                    print("Adding node '{}' to the group '{}'...".format(node_name, group_name))
                     await self.__api.create_node(group_name, node_name, node['host'], node['port'])
                 except APIError as e:
                     print(NODE_CREATION_FAILURE.format(node=node_name, group=group_name, reason=e))
                     continue
                 for attribute_name, attribute in node['attributes'].items():
                     try:
+                        print("Adding attribute '{}' to the node '{}' of the group '{}'".format(attribute_name,
+                                                                                                node_name, group_name))
                         await self.__api.create_attribute(group_name, node_name, attribute_name,
                                                           attribute['value'], attribute['weight'])
                     except APIError as e:
                         print(ATTRIBUTE_CREATION_FAILURE.format(attribute=attribute_name, node=node_name,
                                                                 group=group_name, reason=e))
                         continue
+        print("Configuration applied.")
 
     def __load_config(self):
         with open(self.__config_path, 'r') as config:
