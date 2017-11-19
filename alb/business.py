@@ -82,20 +82,44 @@ class NodeFromGroupAlreadyExists(BusinessProcessError):
 class Attribute(object):
 
     def __init__(self, value, weight):
-        self.value = value
-        self.weight = weight
+        self.__value = float(value)
+        self.__weight = float(weight)
+
+    @property
+    def value(self):
+        return self.__value
+
+    @value.setter
+    def value(self, value):
+        self.__value = float(value)
+
+    @property
+    def weight(self):
+        return self.__weight
+
+    @weight.setter
+    def weight(self, value):
+        self.__weight = float(value)
 
     @property
     def current_weight(self):
-        return self.value * self.weight
+        return self.__value * self.__weight
 
 
 class Node(object):
 
     def __init__(self, host, port):
         self.host = host
-        self.port = port
+        self.__port = int(port)
         self.__attributes = {}
+
+    @property
+    def port(self):
+        return self.__port
+
+    @port.setter
+    def port(self, value):
+        self.__port = int(value)
 
     def get_attributes(self):
         attributes = {}
