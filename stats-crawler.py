@@ -73,27 +73,26 @@ class StatsCrawler(object):
 
     async def main(self):
         while True:
+            print("Trying to obtain node groups...")
             node_groups = await self.__api.get_node_groups()
-            tasks = []
+            print("Obtained node groups successfully!")
             for group_name, group in node_groups.items():
                 for node_name, node in group['nodes'].items():
                     for attribute_name, attribute in node['attributes'].items():
                         collector = self.__collectors.get(attribute_name, None)
                         if self.__collectors.get(attribute_name, None) is not None:
-                            task = self.__collect(collector, group_name, node_name,
-                                                           attribute_name, node['host'])
-                            tasks.append(task)
-            task = asyncio.sleep(self.__interval)
-            tasks.append(task)
-            await self.__wait_for_tasks_completion(tasks)
-
-    async def __wait_for_tasks_completion(self, tasks):
-        for task in tasks:
-            await task
+                            print("Will try to collect '{}' of the '{}' from group '{}'.".format(attribute_name,
+                                                                                                 node_name, group_name))
+                            collection_task = self.__collect(collector, group_name, node_name, attribute_name,
+                                                             node['host'])
+                            asyncio.ensure_future(collection_task)
+            await asyncio.sleep(self.__interval)
 
     async def __collect(self, collector, group, node, attribute, host):
+        print("Trying to collect '{}' of the '{}' from group '{}'...".format(attribute, node, group))
         value = await collector.collect(host)
         await self.__api.update_attribute(group, node, attribute, value=value)
+        print("Successfully collected '{}' of the '{}' from group '{}'.".format(attribute, node, group))
 
 
 if __name__ == '__main__':
