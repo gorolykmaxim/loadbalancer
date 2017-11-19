@@ -11,26 +11,26 @@ class Resource(object):
         async with ClientSession() as session:
             async with session.get(url=url) as response:
                 if response.status < 200 or response.status > 399:
-                    raise APIError(response.text)
+                    raise APIError(await response.text())
                 return await response.json()
 
     async def post(self, url, body):
         async with ClientSession() as session:
             async with session.post(url=url, json=body) as response:
                 if response.status < 200 or response.status > 399:
-                    raise APIError(response.text)
+                    raise APIError(await response.text())
 
     async def put(self, url, body):
         async with ClientSession() as session:
             async with session.put(url=url, json=body) as response:
                 if response.status < 200 or response.status > 399:
-                    raise APIError(response.text)
+                    raise APIError(await response.text())
 
     async def delete(self, url):
         async with ClientSession() as session:
             async with session.delete(url=url) as response:
                 if response.status < 200 or response.status > 399:
-                    raise APIError(response.text)
+                    raise APIError(await response.text())
 
 
 class AdvancedLoadbalancerAPI(object):
