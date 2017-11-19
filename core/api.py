@@ -36,7 +36,7 @@ class Resource(object):
 class AdvancedLoadbalancerAPI(object):
 
     def __init__(self, url=None):
-        self.__url = url or 'http://localhost:5000{}'
+        self.__url = url + '{}' if url is not None else 'http://localhost:5000{}'
         self.__node_groups = self.__url.format('/node_group')
         self.__node_group = self.__url.format('/node_group/{group_name}')
         self.__nodes = self.__url.format('/node_group/{group_name}/node')
