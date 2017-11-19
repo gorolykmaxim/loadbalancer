@@ -5,11 +5,11 @@
         "host": "amazon.com",
         "port": 80,
         "attributes": {
-          "cpu": {
+          "discSpace": {
             "value": 0,
             "weight": 1.5
           },
-          "latency": {
+          "power": {
             "value": 0,
             "weight": 2.7
           }
@@ -19,13 +19,27 @@
         "host": "google.com",
         "port": 80,
         "attributes": {
-          "cpu": {
+          "discSpace": {
             "value": 0,
             "weight": 1.5
           },
-          "latency": {
+          "power": {
             "value": 0,
             "weight": 2.7
+          }
+        }
+      },
+      "third": {
+        "host": "localhost",
+        "port": 8080,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.7
+          },
+          "memory": {
+            "value": 0,
+            "weight": 3.1
           }
         }
       }
@@ -37,11 +51,11 @@
         "host": "amazon.com",
         "port": 80,
         "attributes": {
-          "cpu": {
+          "discSpace": {
             "value": 0,
             "weight": 1.5
           },
-          "latency": {
+          "power": {
             "value": 0,
             "weight": 2.7
           }
@@ -51,13 +65,23 @@
         "host": "google.com",
         "port": 80,
         "attributes": {
-          "cpu": {
+          "discSpace": {
             "value": 0,
             "weight": 1.5
           },
-          "latency": {
+          "power": {
             "value": 0,
             "weight": 2.7
+          }
+        }
+      },
+      "third": {
+        "host": "localhost",
+        "port": 8080,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.7
           }
         }
       }
