@@ -10,26 +10,26 @@ class Resource(object):
     async def get(self, url):
         async with ClientSession() as session:
             async with session.get(url=url) as response:
-                if response.status < 199 or response.status > 399:
+                if response.status < 200 or response.status > 399:
                     raise APIError(response.text)
-                return await response.json
+                return await response.json()
 
     async def post(self, url, body):
         async with ClientSession() as session:
             async with session.post(url=url, json=body) as response:
-                if response.status < 199 or response.status > 399:
+                if response.status < 200 or response.status > 399:
                     raise APIError(response.text)
 
     async def put(self, url, body):
         async with ClientSession() as session:
             async with session.put(url=url, json=body) as response:
-                if response.status < 199 or response.status > 399:
+                if response.status < 200 or response.status > 399:
                     raise APIError(response.text)
 
     async def delete(self, url):
         async with ClientSession() as session:
             async with session.delete(url=url) as response:
-                if response.status < 199 or response.status > 399:
+                if response.status < 200 or response.status > 399:
                     raise APIError(response.text)
 
 
@@ -93,9 +93,9 @@ class AdvancedLoadbalancerAPI(object):
     async def update_attribute(self, group_name, node_name, attribute_name, value=None, weight=None):
         attribute = {}
         if value is not None:
-            attribute_name['value'] = value
+            attribute['value'] = value
         if weight is not None:
-            attribute_name['weight'] = weight
+            attribute['weight'] = weight
         await self.__resource.put(self.__attribute.format(group_name=group_name, node_name=node_name,
                                                           attribute_name=attribute_name), body=attribute)
 
