@@ -1,0 +1,66 @@
+{
+  "talos": {
+    "nodes": {
+      "first": {
+        "host": "amazon.com",
+        "port": 80,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.5
+          },
+          "latency": {
+            "value": 0,
+            "weight": 2.7
+          }
+        }
+      },
+      "second": {
+        "host": "google.com",
+        "port": 80,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.5
+          },
+          "latency": {
+            "value": 0,
+            "weight": 2.7
+          }
+        }
+      }
+    }
+  },
+  "septemius": {
+    "nodes": {
+      "first": {
+        "host": "amazon.com",
+        "port": 80,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.5
+          },
+          "latency": {
+            "value": 0,
+            "weight": 2.7
+          }
+        }
+      },
+      "second": {
+        "host": "google.com",
+        "port": 80,
+        "attributes": {
+          "cpu": {
+            "value": 0,
+            "weight": 1.5
+          },
+          "latency": {
+            "value": 0,
+            "weight": 2.7
+          }
+        }
+      }
+    }
+  }
+}
