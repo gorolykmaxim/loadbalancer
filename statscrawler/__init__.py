@@ -2,7 +2,7 @@ import asyncio
 
 from core.api import AdvancedLoadbalancerAPI
 from core.config import Config
-from statscrawler.collector import CPULoad, MemoryLoad
+from statscrawler.collector import CPULoad, MemoryLoad, CollectingError
 from statscrawler.remote import CommandExecutor
 
 
@@ -37,7 +37,10 @@ class StatsCrawler(object):
             await asyncio.sleep(self.__interval)
 
     async def __collect(self, collector, group, node, attribute, host):
-        print("Trying to collect '{}' of the '{}' from group '{}'...".format(attribute, node, group))
-        value = await collector.collect(host)
-        await self.__api.update_attribute(group, node, attribute, value=value)
-        print("Successfully collected '{}' of the '{}' from group '{}'.".format(attribute, node, group))
+        try:
+            print("Trying to collect '{}' of the '{}' from group '{}'...".format(attribute, node, group))
+            value = await collector.collect(host)
+            await self.__api.update_attribute(group, node, attribute, value=value)
+            print("Successfully collected '{}' of the '{}' from group '{}'.".format(attribute, node, group))
+        except CollectingError as e:
+            print(e)
