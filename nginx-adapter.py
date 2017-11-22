@@ -1,17 +1,45 @@
+import asyncio
 import subprocess
 
+import aiofiles
 from japronto import Application
-from nginx import dumpf, Upstream, Key, loadf
+from nginx import dump, Upstream, Key, load
 
 from core.config import Config
+
+
+class Nginx(object):
+
+    def __init__(self, reload_command, upstream_path):
+        self.__reload_command = reload_command
+        self.__upstream_path = upstream_path
+
+    async def update_upstream(self, name, servers):
+        await self.__update_upstream(name, servers)
+        self.__reload()
+
+    async def __update_upstream(self, name, servers):
+        async with aiofiles.open(self.__upstream_path, mode='rw') as f:
+            conf = load(f)
+            try:
+                conf.remove(*conf.filter('Upstream', name))
+            except ValueError:
+                pass
+            upstream = Upstream(name, *[Key('server', '{url} weight={weight}'.format(**server)) for server in servers])
+            conf.add(upstream)
+            dump(conf, f)
+
+    def __reload(self):
+        subprocess.Popen(self.__reload_command.split(' '))
 
 
 class NginxAdapter(object):
 
     def __init__(self):
         self.__config = Config()
-        self.__upstream_path = self.__config.get_attribute('upstream_path') or '/etc/nginx/upstream.conf'
-        self.__notify_nginx_command = self.__config.get_attribute('notify_nginx_command') or 'service nginx reload'
+        upstream_path = self.__config.get_attribute('upstream_path') or '/etc/nginx/upstream.conf'
+        notify_nginx_command = self.__config.get_attribute('notify_nginx_command') or 'service nginx reload'
+        self.__nginx = Nginx(reload_command=notify_nginx_command, upstream_path=upstream_path)
         self.__application = Application()
 
     def __handle_error(self, request, exception):
@@ -25,8 +53,7 @@ class NginxAdapter(object):
 
     def __handle_update(self, name, nodes):
         servers = self.__adapt_nodes_list(nodes)
-        self.__update_upstream(name, servers)
-        self.__notify_nginx()
+        asyncio.ensure_future(self.__nginx.update_upstream(name, servers))
 
     def __adapt_nodes_list(self, nodes):
         size = len(nodes)
@@ -38,19 +65,6 @@ class NginxAdapter(object):
             'url': '{host}:{port}'.format(host=node['host'], port=node['port']),
             'weight': int(position / list_size * 100) + 1
         }
-
-    def __update_upstream(self, name, servers):
-        conf = loadf(self.__upstream_path)
-        try:
-            conf.remove(*conf.filter('Upstream', name))
-        except ValueError:
-            pass
-        upstream = Upstream(name, *[Key('server', '{url} weight={weight}'.format(**server)) for server in servers])
-        conf.add(upstream)
-        dumpf(conf, self.__upstream_path)
-
-    def __notify_nginx(self):
-        subprocess.call(self.__notify_nginx_command.split(' '))
 
     def main(self):
         self.__application.add_error_handler(Exception, self.__handle_error)
