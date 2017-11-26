@@ -36,14 +36,17 @@ func (v valueUpdateError) Error() string {
 	return fmt.Sprintf("Submission failed with code %d", v.code)
 }
 
+// Update value of the latency attribute of the specified node.
 func UpdateNodeLatency(apiUrl, group, node string, value int) error {
 	return put(apiUrl, group, node, "latency", value)
 }
 
+// Update value of the distance attribute of the specified node.
 func UpdateNodeDistance(apiUrl, group, node string, value int) error {
 	return put(apiUrl, group, node, "distance", value)
 }
 
+// Execute a PUT HTTP request. Return an error, if such has occurred.
 func put(apiUrl, group, node, attribute string, value int) error {
 	url := fmt.Sprintf("%s/node_group/%s/node/%s/attribute/%s", apiUrl, group, node, attribute)
 	v, err := json.Marshal(&valueUpdate{value})
@@ -63,6 +66,7 @@ func put(apiUrl, group, node, attribute string, value int) error {
 	return err
 }
 
+// Return all node groups. Return an error, if such has occurred.
 func GetNodeGroups(apiUrl string) (nodeGroups map[string]NodeGroup, err error){
 	url := fmt.Sprintf("%s/node_group", apiUrl)
 	response, err := http.Get(url)

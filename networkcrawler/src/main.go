@@ -10,6 +10,9 @@ import (
 	"network"
 )
 
+// Entry-point of the network-crawler.
+// Load configuration of the service and start periodically load list of nodes and their attributes,
+// scan their network status and update their attributes in the ALB.
 func main() {
 	interval, apiUrl := loadConfig()
 	for {
@@ -31,6 +34,7 @@ func main() {
 	}
 }
 
+// Return a configuration of the application.
 func loadConfig() (int, string) {
 	interval := 10
 	if v := os.Getenv("INTERVAL") ; v != "" {
@@ -43,6 +47,8 @@ func loadConfig() (int, string) {
 	return interval, apiUrl
 }
 
+// Check if node has known attributes. If it does - scan network environment of the node and
+// update its attributes in the ALB.
 func processNode(apiUrl, groupName, nodeName string, node api.Node) {
 	_, latencyOk := node.Attributes["latency"]
 	_, distanceOk := node.Attributes["distance"]

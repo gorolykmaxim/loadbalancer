@@ -5,8 +5,19 @@ from alb.service import ServiceLayer, BAD_REQUEST, INTERNAL_ERROR, GET, POST, DE
 
 
 class AdvancedLoadbalancer(object):
+    """The root class of the advanced-loadbalancer service.
 
+    Initializes and inter-connects its layers and runs the service layer.
+
+    Attributes:
+        __config (Config): Configuration of the alb.
+        __integration_layer (IntegrationLayer): Integration layer of the alb.
+        __business_layer (BusinessLayerFacade): Facade of the business layer of the alb.
+        __service_layer (ServiceLayer): Service layer of the alb.
+
+    """
     def __init__(self):
+        """Constructor of the AdvancedLoadbalancer."""
         self.__config = Config()
         self.__integration_layer = IntegrationLayer(proxy_url=self.__config.get_attribute('proxy_url'))
         self.__business_layer = BusinessLayerFacade(integration_layer=self.__integration_layer)
@@ -14,6 +25,7 @@ class AdvancedLoadbalancer(object):
                                             port=self.__config.get_attribute('port'))
 
     def main(self):
+        """An entry point of the AdvancedLoadbalancer. Initialize layers and interconnects them between each other."""
         self.__service_layer.map_business_error(BusinessProcessError, BAD_REQUEST)
         self.__service_layer.map_business_error(ProxyError, INTERNAL_ERROR)
         node_groups_url = '/node_group'

@@ -6,19 +6,38 @@ from core.config import Config
 
 
 GROUP_CREATION_FAILURE = "Failed to create a node group '{group}' - {reason}"
+"""Group creation failure message template."""
 NODE_CREATION_FAILURE = "Failed to create a node '{node}' in the group '{group}' - {reason}"
+"""Node creation failure message template."""
 ATTRIBUTE_CREATION_FAILURE = "Failed to add an attribute '{attribute}' to the node '{node}' " \
                              "of the group '{group}' - {reason}"
+"""Attribute creation failure message template."""
 
 
 class ConfigLoader(object):
+    """config-loader service root class.
 
+    Loads configuration from the specified JSON file and loads the configuration the ALB via its API.
+
+    Attributes:
+        __config (Config): Configuration of the application.
+        __config_path (str): Path to the JSON configuration file.
+        __api (AdvancedLoadbalancerAPI): API of the ALB.
+
+    """
     def __init__(self):
+        """Constructor of the ConfigLoader."""
         self.__config = Config()
         self.__config_path = self.__config.get_attribute('config_path') or './config.json'
         self.__api = AdvancedLoadbalancerAPI(self.__config.get_attribute('api_url'))
 
     async def main(self):
+        """Entry-point of the ConfigLoader. Load configuration from the specified file and load it into the ALB
+        using its API.
+
+        Note: awaitable method.
+
+        """
         print("Loading config...")
         config = self.__load_config()
         print("Loaded config successfully!")
@@ -49,6 +68,12 @@ class ConfigLoader(object):
         print("Configuration applied.")
 
     def __load_config(self):
+        """Return configuration, that should be loaded into the ALB.
+
+        Returns:
+            dict: Configuration of the ALB.
+
+        """
         with open(self.__config_path, 'r') as config:
             return json.load(config)
 
